@@ -12,7 +12,7 @@ class AlumnosController extends Controller
 public function listAlumnos(){
     
     $totalAlumnos = Alumnos::all();
-    $alumnos = Alumnos::orderBy('id', 'DESC')->get();
+    $alumnos = Alumnos::orderBy('id', 'DESC')->paginate(8);
     return view('alumnos', compact('alumnos','totalAlumnos'));
 
 }
@@ -22,7 +22,7 @@ public function DeleteMultiple(Request $request){
         $ids = $request->ids;
         $sql = DB::table("Alumnos")->whereIn('id',explode(",",$ids))->delete();
 
-        $total = Alumnos::all()->count(); //Consulto la Cantidad nuevamente
+        $total = Alumnos::all()->count(); //Consulto la nueva Cantidad de Registros
 
         /* return response()->json([
                 'msjtotal'=> 'Alumnos Borrados ('.$ids.')  Correctamente.'

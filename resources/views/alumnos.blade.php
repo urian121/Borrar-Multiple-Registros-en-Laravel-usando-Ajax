@@ -18,6 +18,9 @@
           color: azure;
       }
     </style>
+<!---Notificaciones en Bootstrap ---->
+<link rel="stylesheet" href="{{ asset('notificaciones/css/Lobibox.min.css') }}">
+<link rel="stylesheet" href="{{ asset('notificaciones/css/notifications.css') }}">
 </head>
 <body>
 
@@ -61,10 +64,23 @@
             @endforeach
         @endif
     </table>
-    </div>
+
+
+
+    {!! $alumnos->links() !!}
+
 
 </div>
 
+
+
+
+</div>
+
+<!----Audio de manera Oculta ---->
+<audio class="audio" style="display:none;">
+    <source src="{{ asset('notificaciones/sounds/sound2.ogg') }}" type="audio/ogg">
+</audio>
 
 
 
@@ -72,6 +88,13 @@
 
 <script src="{{ asset('js/jquery-3.5.1.js') }}"></script>  
 <script src="{{ asset('js/bootstrap.min.js') }}"></script> 
+
+<!----- Solo Para Notificaciones en Bootstrap ---->
+<script src="{{ asset('notificaciones/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('notificaciones/js/Lobibox.js') }}"></script>
+<script src="{{ asset('notificaciones/js/notification-active.js') }}"></script>
+
+
 <script type="text/javascript">
 $(document).ready(function () {
     $('.borrarAll').on('click', function(e) {
@@ -83,16 +106,19 @@ $(document).ready(function () {
     
         console.log(idsArray);
     
-        var join_selected_values = idsArray.join(",");
-        console.log(join_selected_values);
+        var unir_arrays_seleccionados = idsArray.join(",");
+        console.log(unir_arrays_seleccionados);
     
         if(idsArray.length > 0){
         $.ajax({
             url: $(this).data('url'),
             type: 'DELETE',
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-            data: 'ids='+join_selected_values,
+            data: 'ids='+unir_arrays_seleccionados,
             success: function (data) {
+            
+                $(".audio")[0].play();
+                ExitoEvento();
 
                 if (data['msjtotal'] ) {
                 $.each(idsArray,function(indice,id) {
@@ -102,13 +128,26 @@ $(document).ready(function () {
                 //alert(data['mensaje']);
                 $('#total').html(data.msjtotal);
                 }else {
-                  //  console.log('Error, no se Eliminaron los Alumnos .. ' + data['error']);
+                  console.log('Error, no se Eliminaron los Alumnos .. ' + data['error']);
                 }
             },
+            error: function (data) {
+            alert(data.responseText);
+        }
            
         });
         }
     });
+
+    function ExitoEvento(){
+    $("html, body").animate({ scrollTop: 290 }, 'slow');
+    Lobibox.notify(
+    'success', {
+        img: 'notificaciones/img/exito.png',
+        title: '<strong>Felicitaciones ! </strong>',
+        msg  : 'Registrados Borrados Correctamente.',
+    }
+)};
     
 });
 </script>
