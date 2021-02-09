@@ -1,85 +1,41 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Alumnos;
 use Illuminate\Http\Request;
 
 class AlumnosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+public function listAlumnos(){
+    
+    $totalAlumnos = Alumnos::all();
+    $alumnos = Alumnos::orderBy('id', 'DESC')->get();
+    return view('alumnos', compact('alumnos','totalAlumnos'));
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Alumnos  $alumnos
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Alumnos $alumnos)
-    {
-        //
-    }
+}
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Alumnos  $alumnos
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Alumnos $alumnos)
-    {
-        //
-    }
+public function DeleteMultiple(Request $request){
+    if($request->ajax()){
+        $ids = $request->ids;
+        $sql = DB::table("Alumnos")->whereIn('id',explode(",",$ids))->delete();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Alumnos  $alumnos
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Alumnos $alumnos)
-    {
-        //
-    }
+        $total = Alumnos::all()->count(); //Consulto la Cantidad nuevamente
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Alumnos  $alumnos
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Alumnos $alumnos)
-    {
-        //
-    }
+        /* return response()->json([
+                'msjtotal'=> 'Alumnos Borrados ('.$ids.')  Correctamente.'
+        ]); */
+
+        return response()->json([
+            'msjtotal' =>'<span> Total de Alumnos </span> <strong> ('. $total .')</strong>',
+            'mensaje'=>"Alumnos Borrados  ('. $total.' + ' .$ids .' + '. $sql.') Correctamente."
+            ]); 
+
+        }
+}
+
+
+
 }
