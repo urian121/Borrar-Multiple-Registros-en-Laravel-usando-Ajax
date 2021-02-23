@@ -9,6 +9,7 @@ class AlumnosController extends Controller
 {
 
 
+
 public function listAlumnos(){
     
     $totalAlumnos = Alumnos::all();
@@ -18,9 +19,13 @@ public function listAlumnos(){
 }
 
 public function DeleteMultiple(Request $request){
+
+    //Pregunto si la peticion request viene por Ajax
     if($request->ajax()){
         $ids = $request->ids;
-        $sql = DB::table("Alumnos")->whereIn('id',explode(",",$ids))->delete();
+
+        $sql = DB::table("Alumnos")->whereIn('id',explode(",",$ids))->delete(); 
+        //el explode es para quitar la coma entre cada id ejemplo 2, 5,8,5,
 
         $total = Alumnos::all()->count(); //Consulto la nueva Cantidad de Registros
 
